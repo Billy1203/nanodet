@@ -1,6 +1,9 @@
 import cv2
 import os
 import time
+import sys
+sys.path.append(os.path.curdir)
+
 import torch
 import argparse
 from nanodet.util import cfg, load_config, Logger
@@ -55,6 +58,7 @@ class Predictor(object):
                     img=img)
         meta = self.pipeline(meta, self.cfg.data.val.input_size)
         meta['img'] = torch.from_numpy(meta['img'].transpose(2, 0, 1)).unsqueeze(0).to(self.device)
+        print(img_info)
         with torch.no_grad():
             results = self.model.inference(meta)
         return meta, results
@@ -78,6 +82,7 @@ def get_image_list(path):
 
 def main():
     args = parse_args()
+    print(args)
     torch.backends.cudnn.enabled = True
     torch.backends.cudnn.benchmark = True
 
@@ -86,17 +91,26 @@ def main():
     predictor = Predictor(cfg, args.model, logger, device='cuda:0')
     logger.log('Press "Esc", "q" or "Q" to exit.')
     if args.demo == 'image':
+        start = time.time()
         if os.path.isdir(args.path):
             files = get_image_list(args.path)
         else:
             files = [args.path]
         files.sort()
+
         for image_name in files:
+            # print(image_name)
             meta, res = predictor.inference(image_name)
-            predictor.visualize(res, meta, cfg.class_names, 0.35)
-            ch = cv2.waitKey(0)
-            if ch == 27 or ch == ord('q') or ch == ord('Q'):
-                break
+
+            # Do NOT show the result
+
+            # predictor.visualize(res, meta, cfg.class_names, 0.35)
+            # ch = cv2.waitKey(0)
+            # if ch == 27 or ch == ord('q') or ch == ord('Q'):
+            #     break
+        # print(meta, res)
+        print("FPS: %.2f"%(len(files)/(time.time()-start)))
+
     elif args.demo == 'video' or args.demo == 'webcam':
         cap = cv2.VideoCapture(args.path if args.demo == 'video' else args.camid)
         while True:

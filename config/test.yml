@@ -1,5 +1,5 @@
 #Config File example
-save_dir: workspace/20210315_1
+save_dir: workspace/test1
 model:
 
   ########### ShuffleNetV2 ############
