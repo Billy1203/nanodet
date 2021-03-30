@@ -27,7 +27,12 @@ def parse_args():
 
 
 class Predictor(object):
-    def __init__(self, cfg, model_path, logger, device='cuda:0'):
+    def __init__(self, cfg, model_path, logger):
+        if torch.cuda.is_available():
+            device = 'cuda:0'
+        else:
+            device = 'cpu'
+
         self.cfg = cfg
         self.device = device
         model = build_model(cfg.model)
@@ -88,7 +93,7 @@ def main():
 
     load_config(cfg, args.config)
     logger = Logger(-1, use_tensorboard=False)
-    predictor = Predictor(cfg, args.model, logger, device='cuda:0')
+    predictor = Predictor(cfg, args.model, logger)
     logger.log('Press "Esc", "q" or "Q" to exit.')
     if args.demo == 'image':
         start = time.time()

@@ -6,7 +6,7 @@ from .mobilenetv2 import MobileNetV2
 from .efficientnet_lite import EfficientNetLite
 from .custom_csp import CustomCspNet
 from .repvgg import RepVGG
-from .mobilenetv3 import MobileNetV3_Small
+# from .mobilenetv3 import MobileNetV3_Small
 
 
 def build_backbone(cfg):
@@ -26,8 +26,8 @@ def build_backbone(cfg):
         return CustomCspNet(**backbone_cfg)
     elif name == 'RepVGG':
         return RepVGG(**backbone_cfg)
-    elif name == 'MobileNetV3':
-        return MobileNetV3_Small(**backbone_cfg)
+    # elif name == 'MobileNetV3':
+    #     return MobileNetV3_Small(**backbone_cfg)
     else:
         raise NotImplementedError
 
