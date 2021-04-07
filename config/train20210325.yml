@@ -1,35 +1,68 @@
-# NanoDet-m with transformer attention
-# COCO mAP(0.5:0.95) = 0.217
-#             AP_50  = 0.363
-#             AP_75  = 0.218
-#           AP_small = 0.069
-#               AP_m = 0.214
-#               AP_l = 0.364
-
-save_dir: workspace/nanodet_t
+#Config File example
+save_dir: workspace/20210325_1
 model:
+
+  ########### ShuffleNetV2 ############
+#  arch:
+#    name: GFL
+#    backbone:
+#      name: ShuffleNetV2
+#      model_size: 1.0x
+#      out_stages: [2,3,4]
+#      activation: LeakyReLU
+#    fpn:
+#      name: PAN
+#      in_channels: [116, 232, 464]
+#      out_channels: 96
+#      start_level: 0
+#      num_outs: 3
+  #####################################
+
+  ########### MobileNetV2 ############
+#  arch:
+#    name: GFL
+#    backbone:
+#      name: MobileNetV2
+#      out_stages: [2,4,6]
+#    fpn:
+#      name: TAN
+#      in_channels: [32, 96, 1280]
+#      out_channels: 96
+#      start_level: 0
+#      num_outs: 3
+  #####################################
+
+  ########### MobileNetV3 ############
   arch:
     name: GFL
     backbone:
-      name: ShuffleNetV2
-      model_size: 1.0x
-      out_stages: [2,3,4]
-      activation: LeakyReLU
+      name: MobileNetV3
+      out_stages: [2,6]
+
+
     fpn:
       name: TAN # transformer attention network
-      in_channels: [116, 232, 464]
+      in_channels: [ 116, 232, 464 ]
       out_channels: 128
-      feature_hw: [20,20] # size for position embedding
+      feature_hw: [ 20,20 ] # size for position embedding
       num_heads: 8
       num_encoders: 1
       mlp_ratio: 4
       dropout_ratio: 0.1
       activation: LeakyReLU
+#    fpn:
+#      name: PAN
+#      in_channels: [24, 48, 576]
+#      out_channels: 96
+#      start_level: 0
+#      num_outs: 3
+  #####################################
+
     head:
       name: NanoDetHead
-      num_classes: 4
-      input_channel: 128
-      feat_channels: 128
+      num_classes: 4 #Please fill in the number of categories (not include background category)
+      input_channel: 96
+      feat_channels: 96
       stacked_convs: 2
       share_cls_reg: True
       octave_base_scale: 5
@@ -51,14 +84,13 @@ model:
           name: GIoULoss
           loss_weight: 2.0
 
-
-class_names: &class_names ['hand', 'good', 'yeah', 'okay']
+class_names: &class_names ['hand', 'good', 'yeah', 'okay']  #Please fill in the category names (not include background category)
 data:
   train:
     name: xml_dataset
     class_names: *class_names
     img_path: /home/yiheng/handPoseDataset/training_dataset/images  #Please fill in train image path
-    ann_path: /home/yiheng/handPoseDataset/training_dataset/labels
+    ann_path: /home/yiheng/handPoseDataset/training_dataset/labels  #Please fill in train xml path
     input_size: [320,320] #[w,h]
     keep_ratio: True
     pipeline:
@@ -77,13 +109,13 @@ data:
     name: xml_dataset
     class_names: *class_names
     img_path: /home/yiheng/handPoseDataset/validation_dataset/images #Please fill in val image path
-    ann_path: /home/yiheng/handPoseDataset/validation_dataset/labels
+    ann_path: /home/yiheng/handPoseDataset/validation_dataset/labels #Please fill in val xml path
     input_size: [320,320] #[w,h]
     keep_ratio: True
     pipeline:
       normalize: [[103.53, 116.28, 123.675], [57.375, 57.12, 58.395]]
 device:
-  gpu_ids: [0]
+  gpu_ids: [1]
   workers_per_gpu: 8
   batchsize_per_gpu: 40
 schedule:
@@ -97,11 +129,11 @@ schedule:
   warmup:
     name: linear
     steps: 300
-    ratio: 0.01
-  total_epochs: 190
+    ratio: 0.1
+  total_epochs: 150
   lr_schedule:
     name: MultiStepLR
-    milestones: [140,170,180,185]
+    milestones: [130,160,175,185]
     gamma: 0.1
   val_intervals: 10
 evaluator:

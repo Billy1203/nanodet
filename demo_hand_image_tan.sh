@@ -1,0 +1,1 @@
+python demo/demo.py image --config /home/yiheng/nanodet/config/Transformer/nanodet-t.yml --model /home/yiheng/nanodet/demo/workspace/nanodet_t/model_last.pth --path /home/yiheng/dataset/image_test_for_fps/

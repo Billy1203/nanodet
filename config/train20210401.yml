@@ -1,35 +1,35 @@
 #Config File example
-save_dir: workspace/test1
+save_dir: workspace/20210401_1
 model:
 
   ########### ShuffleNetV2 ############
-  arch:
-    name: GFL
-    backbone:
-      name: ShuffleNetV2
-      model_size: 1.0x
-      out_stages: [2,3,4]
-      activation: LeakyReLU
-    fpn:
-      name: PAN
-      in_channels: [116, 232, 464]
-      out_channels: 96
-      start_level: 0
-      num_outs: 3
-  #####################################
-
-  ########### MobileNetV2 ############
 #  arch:
 #    name: GFL
 #    backbone:
-#      name: MobileNetV2
-#      out_stages: [2,4,6]
+#      name: ShuffleNetV2S
+#      model_size: 1.0x
+#      out_stages: [2,3,4]
+#      activation: LeakyReLU
 #    fpn:
-#      name: TAN
-#      in_channels: [32, 96, 1280]
+#      name: PAN
+#      in_channels: [116, 232, 464]
 #      out_channels: 96
 #      start_level: 0
 #      num_outs: 3
+  #####################################
+
+  ########### MobileNetV2 ############
+  arch:
+    name: GFL
+    backbone:
+      name: MobileNetV2S
+      out_stages: [2,4,6]
+    fpn:
+      name: PAN
+      in_channels: [32, 96, 1280]
+      out_channels: 96
+      start_level: 0
+      num_outs: 4
   #####################################
 
   ########### MobileNetV3 ############
@@ -38,6 +38,18 @@ model:
 #    backbone:
 #      name: MobileNetV3
 #      out_stages: [2,6]
+#
+#
+#    fpn:
+#      name: TAN # transformer attention network
+#      in_channels: [ 116, 232, 464 ]
+#      out_channels: 128
+#      feature_hw: [ 20,20 ] # size for position embedding
+#      num_heads: 8
+#      num_encoders: 1
+#      mlp_ratio: 4
+#      dropout_ratio: 0.1
+#      activation: LeakyReLU
 #    fpn:
 #      name: PAN
 #      in_channels: [24, 48, 576]
@@ -103,9 +115,9 @@ data:
     pipeline:
       normalize: [[103.53, 116.28, 123.675], [57.375, 57.12, 58.395]]
 device:
-  gpu_ids: [1]
-  workers_per_gpu: 12
-  batchsize_per_gpu: 40
+  gpu_ids: [0]
+  workers_per_gpu: 8
+  batchsize_per_gpu: 50
 schedule:
 #  resume:
 #  load_model: YOUR_MODEL_PATH
@@ -116,9 +128,9 @@ schedule:
     weight_decay: 0.0001
   warmup:
     name: linear
-    steps: 300
+    steps: 150
     ratio: 0.1
-  total_epochs: 150
+  total_epochs: 100
   lr_schedule:
     name: MultiStepLR
     milestones: [130,160,175,185]

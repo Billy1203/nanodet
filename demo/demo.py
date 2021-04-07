@@ -1,3 +1,5 @@
+# image --config /home/yiheng/nanodet/config/Transformer/nanodet-t.yml --model /home/yiheng/nanodet/demo/workspace/nanodet_t/model_last.pth --path /home/yiheng/dataset/image_test_for_fps/
+# webcam --config /home/yiheng/nanodet/config/Transformer/nanodet-t.yml --model /home/yiheng/nanodet/demo/workspace/nanodet_t/model_last.pth --camid 0
 import cv2
 import os
 import time
@@ -10,6 +12,8 @@ from nanodet.util import cfg, load_config, Logger
 from nanodet.model.arch import build_model
 from nanodet.util import load_model_weight
 from nanodet.data.transform import Pipeline
+
+import numpy as np
 
 image_ext = ['.jpg', '.jpeg', '.webp', '.bmp', '.png']
 video_ext = ['mp4', 'mov', 'avi', 'mkv']
@@ -51,7 +55,18 @@ class Predictor(object):
         img_info = {}
         if isinstance(img, str):
             img_info['file_name'] = os.path.basename(img)
+            # TODO pre-processing for img
             img = cv2.imread(img)
+
+
+            # h, w = img.shape[:2]
+            # h_mid = int(h/2)
+            # w_mid = int(w/2)
+            # mask_list = [int(h*0.2), h, w_mid-150, w_mid+150]
+            # mask = np.zeros((h, w), np.uint8)
+            # cv2.rectangle(mask, (mask_list[1], mask_list[0]), (mask_list[2], mask_list[3]), 255, -1)
+            # img = cv2.add(img, np.zeros(np.shape(img), dtype=np.uint8), mask=mask)
+
         else:
             img_info['file_name'] = None
 
@@ -63,8 +78,9 @@ class Predictor(object):
                     img=img)
         meta = self.pipeline(meta, self.cfg.data.val.input_size)
         meta['img'] = torch.from_numpy(meta['img'].transpose(2, 0, 1)).unsqueeze(0).to(self.device)
-        print(img_info)
+        # print(meta['img'])
         with torch.no_grad():
+            # results = 0
             results = self.model.inference(meta)
         return meta, results
 
@@ -106,13 +122,14 @@ def main():
         for image_name in files:
             # print(image_name)
             meta, res = predictor.inference(image_name)
+            # print(image_name)
 
             # Do NOT show the result
-
             # predictor.visualize(res, meta, cfg.class_names, 0.35)
             # ch = cv2.waitKey(0)
             # if ch == 27 or ch == ord('q') or ch == ord('Q'):
             #     break
+
         # print(meta, res)
         print("FPS: %.2f"%(len(files)/(time.time()-start)))
 

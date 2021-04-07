@@ -55,6 +55,7 @@ def main(args):
     logger.log('Setting up data...')
     train_dataset = build_dataset(cfg.data.train, 'train')
     val_dataset = build_dataset(cfg.data.val, 'test')
+    print(cfg)
 
     if len(cfg.device.gpu_ids) > 1:
         print('rank = ', local_rank)
