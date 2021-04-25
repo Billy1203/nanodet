@@ -1,5 +1,10 @@
-# image --config /home/yiheng/nanodet/config/Transformer/nanodet-t.yml --model /home/yiheng/nanodet/demo/workspace/nanodet_t/model_last.pth --path /home/yiheng/dataset/image_test_for_fps/
-# webcam --config /home/yiheng/nanodet/config/Transformer/nanodet-t.yml --model /home/yiheng/nanodet/demo/workspace/nanodet_t/model_last.pth --camid 0
+# image --config /home/yiheng/nanodet/config/Transformer/nanodet-t.yml
+# --model /home/yiheng/nanodet/demo/workspace/nanodet_t/model_last.pth
+# --path /home/yiheng/dataset/image_test_for_fps/
+
+
+# webcam --config /home/yiheng/nanodet/config/Transformer/nanodet-t.yml
+# --model /home/yiheng/nanodet/demo/workspace/nanodet_t/model_last.pth --camid 0
 import cv2
 import os
 import time

@@ -10,7 +10,7 @@ from .mobilenetv3 import MobileNetV3_Small
 from .mobilenetv2_s import MobileNetV2S
 from .shufflenetv2_s import ShuffleNetV2S
 from .mobilenetv2_s2 import MobileNetV2S2
-from .mobilenetv3_2 import MobileNetV3
+from .mobilenetv3_2 import MobileNetV3_Small2
 
 
 def build_backbone(cfg):
@@ -38,6 +38,8 @@ def build_backbone(cfg):
         return MobileNetV2S2(**backbone_cfg)
     elif name == 'MobileNetV3':
         return MobileNetV3_Small(**backbone_cfg)
+    elif name == 'MobileNetV3S2':
+        return MobileNetV3_Small2(**backbone_cfg)
     else:
         raise NotImplementedError
 
